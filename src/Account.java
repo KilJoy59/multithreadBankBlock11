@@ -5,6 +5,10 @@ public class Account
     private boolean isBlock = false;
     private String blockMessage = "Account is block";
 
+    public Account(String accNumber) {
+        this.accNumber = accNumber;
+    }
+
     public long getMoney() {
         if (!isBlock) {
             return money;
@@ -38,20 +42,12 @@ public class Account
         isBlock = block;
     }
 
-    public void refillAccount ( long money) {
-        if (isBlock) {
-            System.out.println(blockMessage);
-        } else {
-            setMoney(getMoney() + money);
-        }
+    public String getBlockMessage() {
+        return blockMessage;
     }
 
-    public void withdrawCash ( long money) {
-        if (isBlock) {
-            System.out.println(blockMessage);
-        } else {
-
-            setMoney(getMoney() - money);
-        }
+    public void setBlockMessage(String blockMessage) {
+        this.blockMessage = blockMessage;
     }
+
 }

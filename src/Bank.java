@@ -10,7 +10,6 @@ public class Bank
         accounts = new HashMap<>();
     }
 
-
     public synchronized boolean isFraud(String fromAccountNum, String toAccountNum, long amount)
         throws InterruptedException
     {
@@ -57,7 +56,27 @@ public class Bank
         return account.getMoney();
     }
 
+
+
     public void addAccount(String accountNum, Account account) {
         accounts.put(accountNum, account);
+    }
+
+    public void withdrawCash (String accountNum, long money) {
+        Account account = accounts.get(accountNum);
+        if (account.isBlock()) {
+            System.out.println( account.getBlockMessage());
+        } else {
+            account.setMoney(account.getMoney() - money);
+        }
+    }
+
+    public void refillAccount (String accountNum, long money) {
+        Account account = accounts.get(accountNum);
+        if (account.isBlock()) {
+            System.out.println(account.getBlockMessage());
+        } else {
+            account.setMoney(account.getMoney() + money);
+        }
     }
 }
