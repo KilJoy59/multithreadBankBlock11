@@ -14,7 +14,12 @@ public class Bank
         throws InterruptedException
     {
         Thread.sleep(1000);
-        return random.nextBoolean();
+        boolean rand = random.nextBoolean();
+        return rand;
+    }
+
+    public HashMap<String, Account> getAccounts() {
+        return accounts;
     }
 
     /**
@@ -24,12 +29,10 @@ public class Bank
      * метод isFraud. Если возвращается true, то делается блокировка
      * счетов (как – на ваше усмотрение)
      */
-    public void transfer(String fromAccountNum, String toAccountNum, long amount)  {
-        System.out.println("the transaction from "
-                + fromAccountNum + " to " + toAccountNum + " in the amount " + amount);
-        Account account1 = accounts.get(fromAccountNum);
-        Account account2 = accounts.get(toAccountNum);
-        new Transaction(this, account1, account2, amount).start();
+    public synchronized void transfer(String fromAccountNum, String toAccountNum, long amount)  {
+        Account fromAccount = accounts.get(fromAccountNum);
+        Account toAccount = accounts.get(toAccountNum);
+        new Transaction(this, fromAccount, toAccount, amount).start();
     }
 
     /**
@@ -38,6 +41,7 @@ public class Bank
     public long getBalance(String accountNum)
     {
         Account account = accounts.get(accountNum);
+        System.out.println("Account " + accountNum + " balance: " + account.getMoney());
         return account.getMoney();
     }
 
@@ -47,21 +51,28 @@ public class Bank
         accounts.put(accountNum, account);
     }
 
-    public void withdrawCash (String accountNum, long money) {
+    public synchronized void replehnishment (String accountNum, long money) {
         Account account = accounts.get(accountNum);
         if (account.isBlock()) {
-            System.out.println( account.getBlockMessage());
+            System.out.println(accountNum + " " + account.getBlockMessage());
         } else {
-            account.setMoney(account.getMoney() - money);
+            System.out.println( "Replenishment " + accountNum + " in the amount of " + money);
+            account.setMoney(account.getMoney() + money);
         }
     }
 
-    public void refillAccount (String accountNum, long money) {
-        Account account = accounts.get(accountNum);
+    public synchronized void withdrawal (String accountName, long money) {
+        Account account = accounts.get(accountName);
         if (account.isBlock()) {
-            System.out.println(account.getBlockMessage());
-        } else {
-            account.setMoney(account.getMoney() + money);
+            System.out.println(accountName + " " + account.getBlockMessage());
+        } else if (account.getMoney() < money) {
+                account.setCanSpend(false);
+                System.out.println("Not enough money in " + accountName + " bank account." +
+                        " Operation canceled");
+            } else {
+                if (account.isCanSpend())
+                    System.out.println("Withdrawal from " + accountName + " " + money);
+            account.setMoney(account.getMoney() - money);
         }
     }
 

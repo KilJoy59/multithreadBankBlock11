@@ -1,24 +1,38 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
  * Project Transactions
  * Created by End on окт., 2019
  */
 public class Main {
+     public static List<String> keys = new ArrayList<>();
     public static void main(String[] args) {
 
-        Account vasyaAccount = new Account("123");
-        Account edikAccount = new Account("321");
-
-
         Bank bank = new Bank();
-        bank.addAccount(vasyaAccount.getAccNumber(),vasyaAccount);
-        bank.addAccount(edikAccount.getAccNumber(),edikAccount);
-        bank.refillAccount(vasyaAccount.getAccNumber(),150_000);
-        bank.refillAccount(edikAccount.getAccNumber(),50_000);
-        bank.transfer(vasyaAccount.getAccNumber(),edikAccount.getAccNumber(),10_000);
+        //Создаем 100 аккаунтов и записываем в HashMap
+        for (int i = 0; i < 100 ; i++) {
+            bank.addAccount("account" + i, new Account("account" + i) );
+            keys.add("account" + i);
+            bank.replehnishment(getRandomKey(keys), getRandomCash());
+        }
+
+        for (int i = 0; i <50 ; i++) {
+            bank.transfer(getRandomKey(keys),getRandomKey(keys), getRandomCash());
+        }
 
 
-        bank.transfer(vasyaAccount.getAccNumber(),edikAccount.getAccNumber(),60_000);
-        bank.getBalance(vasyaAccount.getAccNumber());
-        bank.getBalance(edikAccount.getAccNumber());
+    }
+
+    public static String getRandomKey ( List list) {
+        Random random = new Random();
+        return (String) list.get(random.nextInt(list.size()));
+    }
+
+    public static Long getRandomCash () {
+        long range = 123456L;
+        Random r = new Random();
+        return (long)(r.nextDouble()*range);
     }
 }

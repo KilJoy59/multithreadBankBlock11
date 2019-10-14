@@ -5,26 +5,32 @@
 public class Transaction extends Thread {
 
     Bank bank;
-    Account account1;
-    Account account2;
+    Account fromAccount;
+    Account toAccount;
     long amount;
 
-    public Transaction(Bank bank, Account account1, Account account2, long amount) {
+    public Transaction(Bank bank, Account fromAccount, Account toAccount, long amount) {
         this.bank = bank;
-        this.account1 = account1;
-        this.account2 = account2;
+        this.fromAccount = fromAccount;
+        this.toAccount = toAccount;
         this.amount = amount;
     }
 
     @Override
     public void run() {
-        if (!account1.isBlock() && !account2.isBlock())
+        if (!fromAccount.isBlock() && !toAccount.isBlock()) {
             if (amount > 50_000) {
-                new LongTransaction(bank, account1, account2, amount).start();
+                new LongTransaction(bank, fromAccount, toAccount, amount).start();
             } else {
-                account1.setMoney(account1.getMoney() - amount);
-                account2.setMoney(account2.getMoney() + amount);
-                System.out.println("Transaction complete");
+                System.out.println("the transaction from "
+                        + fromAccount + " to " + toAccount + " in the amount " + amount);
+                bank.withdrawal(fromAccount.getAccNumber(), amount);
+                if (fromAccount.isCanSpend()) {
+                    bank.replehnishment(toAccount.getAccNumber(), amount);
+                    System.out.println("Transaction from " + fromAccount + " " + toAccount + " complete");
+                }
+
             }
+        }
     }
 }

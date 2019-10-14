@@ -4,21 +4,20 @@ public class Account
     private String accNumber;
     private boolean isBlock = false;
     private String blockMessage = "Account is block";
+    private boolean canSpend = true;
 
     public Account(String accNumber) {
         this.accNumber = accNumber;
     }
 
     public synchronized  long getMoney() {
-        if (!isBlock) {
             return money;
-        }
-        System.out.println(blockMessage);
-        return 0;
     }
 
     public synchronized  void setMoney(long money) {
+        if (canSpend) {
             this.money = money;
+        }
     }
 
     public String getAccNumber() {
@@ -35,12 +34,8 @@ public class Account
         return isBlock;
     }
 
-    public synchronized  void setBlock(boolean block, String blockMessage ) {
-        if (block) {
-            System.out.println(accNumber + " " + blockMessage);
-        }
+    public synchronized  void setBlock(boolean block) {
         isBlock = block;
-        this.blockMessage = blockMessage;
     }
 
     public synchronized String getBlockMessage() {
@@ -51,4 +46,16 @@ public class Account
         this.blockMessage = blockMessage;
     }*/
 
+    public void setCanSpend(boolean canSpend) {
+        this.canSpend = canSpend;
+    }
+
+    public boolean isCanSpend() {
+        return canSpend;
+    }
+
+    @Override
+    public String toString() {
+        return accNumber;
+    }
 }
