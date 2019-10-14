@@ -19,7 +19,8 @@ public class LongTransaction extends Thread
 
     public void run()
     {
-        System.out.println("the transaction is sent to the security service for verification");
+        System.out.println("the transaction from " + fromAccount + " to "
+                + toAccount + " is sent to the security service for verification");
         try {
             //проверка на мошенничество
             if (bank.isFraud(fromAccount.getAccNumber(), toAccount.getAccNumber(), amount)) {

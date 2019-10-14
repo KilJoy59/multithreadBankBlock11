@@ -22,6 +22,11 @@ public class Main {
         for (int i = 0; i <100 ; i++) {
             //Вызываем 100 транзакций со случайной суммой перевода
             bank.transfer(getRandomKey(keys),getRandomKey(keys), getRandomCash());
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
 

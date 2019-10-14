@@ -20,10 +20,12 @@ public class Bank
     }
 
     //Метод тразакции между аккаунтами
-    public synchronized void transfer(String fromAccountNum, String toAccountNum, long amount)  {
-        Account fromAccount = accounts.get(fromAccountNum);
-        Account toAccount = accounts.get(toAccountNum);
-        new Transaction(this, fromAccount, toAccount, amount).start();//создаем транзакцию в потоке
+    public void transfer(String fromAccountNum, String toAccountNum, long amount)  {
+        if (!fromAccountNum.equals(toAccountNum)) {
+            Account fromAccount = accounts.get(fromAccountNum);
+            Account toAccount = accounts.get(toAccountNum);
+            new Transaction(this, fromAccount, toAccount, amount).start();//создаем транзакцию в потоке
+        }
     }
 
     //Метод который возвращает остаток на счете
