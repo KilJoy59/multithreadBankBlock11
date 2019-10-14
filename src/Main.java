@@ -17,7 +17,7 @@ public class Main {
             keys.add("account" + i);
             bank.replehnishment(getRandomKey(keys), getRandomCash());
         }
-
+        //Вызываем 50 транзакций
         for (int i = 0; i <50 ; i++) {
             bank.transfer(getRandomKey(keys),getRandomKey(keys), getRandomCash());
         }

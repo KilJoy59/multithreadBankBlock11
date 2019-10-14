@@ -18,15 +18,17 @@ public class Transaction extends Thread {
 
     @Override
     public void run() {
-        if (!fromAccount.isBlock() && !toAccount.isBlock()) {
+        //Поверяем аккаунты, заблокированы или нет
+        if (!fromAccount.isBlock() && !toAccount.isBlock()) { //если перевод свыше 50_000
+            // то создаем тразакцию для больших сумм в потоке для дальнейшей проверки на мошенничество
             if (amount > 50_000) {
                 new LongTransaction(bank, fromAccount, toAccount, amount).start();
-            } else {
+            } else { //все что ниже 50_000 проводим без проверки на мошенничество
                 System.out.println("the transaction from "
                         + fromAccount + " to " + toAccount + " in the amount " + amount);
-                bank.withdrawal(fromAccount.getAccNumber(), amount);
-                if (fromAccount.isCanSpend()) {
-                    bank.replehnishment(toAccount.getAccNumber(), amount);
+                bank.withdrawal(fromAccount.getAccNumber(), amount); //снимаем деньги со счета отправителя
+                if (fromAccount.isCanSpend()) { //проверяем достаточно ли денег на счете на аккаунте отправителя
+                    bank.replehnishment(toAccount.getAccNumber(), amount); //если да, то пополняем счет получателя
                     System.out.println("Transaction from " + fromAccount + " " + toAccount + " complete");
                 }
 
