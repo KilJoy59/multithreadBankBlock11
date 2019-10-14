@@ -9,7 +9,7 @@ public class Account
         this.accNumber = accNumber;
     }
 
-    public long getMoney() {
+    public synchronized  long getMoney() {
         if (!isBlock) {
             return money;
         }
@@ -17,7 +17,7 @@ public class Account
         return 0;
     }
 
-    public void setMoney(long money) {
+    public synchronized  void setMoney(long money) {
             this.money = money;
     }
 
@@ -25,29 +25,30 @@ public class Account
         return accNumber;
     }
 
-    public void setAccNumber(String accNumber) {
+    /*public void setAccNumber(String accNumber) {
         if (!isBlock) {
             this.accNumber = accNumber;
         }
-    }
+    }*/
 
-    public boolean isBlock() {
+    public synchronized  boolean isBlock() {
         return isBlock;
     }
 
-    public void setBlock(boolean block) {
+    public synchronized  void setBlock(boolean block, String blockMessage ) {
         if (block) {
             System.out.println(accNumber + " " + blockMessage);
         }
         isBlock = block;
+        this.blockMessage = blockMessage;
     }
 
-    public String getBlockMessage() {
+    public synchronized String getBlockMessage() {
         return blockMessage;
     }
 
-    public void setBlockMessage(String blockMessage) {
+/*    public void setBlockMessage(String blockMessage) {
         this.blockMessage = blockMessage;
-    }
+    }*/
 
 }
