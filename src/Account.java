@@ -1,23 +1,25 @@
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Account
 {
     private long money;
     private String accNumber;
-    private boolean isBlock = false;
+    private AtomicBoolean isBlock = new AtomicBoolean(false);
     private String blockMessage = "Account is block";
-    private boolean canSpend = true;
+    private AtomicBoolean canSpend = new AtomicBoolean(true);
 
-    public Account(String accNumber) {
+    public Account(String accNumber , long money) {
         this.accNumber = accNumber;
+        this.money = money;
     }
 
-    public synchronized  long getMoney() {
+    public long getMoney() {
             return money;
     }
 
-    public synchronized  void setMoney(long money) {
-        if (canSpend) {
+    public void setMoney(long money) {
+        if (canSpend.get()) {
             this.money = money;
         }
     }
@@ -26,39 +28,37 @@ public class Account
         return accNumber;
     }
 
-    /*public void setAccNumber(String accNumber) {
-        if (!isBlock) {
-            this.accNumber = accNumber;
-        }
-    }*/
-
-    public synchronized  boolean isBlock() {
-        return isBlock;
-    }
-
-    public synchronized  void setBlock(boolean block) {
-        isBlock = block;
-    }
-
-    public synchronized String getBlockMessage() {
+    public String getBlockMessage() {
         return blockMessage;
     }
 
-/*    public void setBlockMessage(String blockMessage) {
-        this.blockMessage = blockMessage;
-    }*/
-
-    public void setCanSpend(boolean canSpend) {
-        this.canSpend = canSpend;
+    boolean isBlock() {
+        return isBlock.get();
     }
 
-    public boolean isCanSpend() {
-        return canSpend;
+    void blockAccount() {
+       isBlock.set(true);
+    }
+
+    void unBlockAccount() {
+        isBlock.set(false);
+    }
+
+    boolean isCanSpend() {
+        return canSpend.get();
+    }
+
+    void setCantSpend() {
+        canSpend.set(false);
+    }
+
+    void setCanSpend() {
+        canSpend.set(true);
     }
 
     @Override
     public String toString() {
-        return accNumber;
+        return "Account number:" + accNumber;
     }
 
     @Override

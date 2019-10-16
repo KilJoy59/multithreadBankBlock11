@@ -1,40 +1,28 @@
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
+import java.util.concurrent.*;
 
 /**
  * Project Transactions
  * Created by End on окт., 2019
  */
 public class Main {
-     public static List<String> keys = new ArrayList<>();
+     static Bank bank;
+     static Semaphore semaphore;
     public static void main(String[] args) {
-
-        Bank bank = new Bank();
-        for (int i = 0; i < 100 ; i++) {
-            //Создаем 100 аккаунтов и записываем в список аккаунтов банка
-            bank.addAccount("account" + i, new Account("account" + i) );
-            keys.add("account" + i); //заполняем список названий аккаунтов
-            //пополняем счет случайных акаунтов случайной суммой
-            bank.replehnishment(getRandomKey(keys), getRandomCash());
+        bank = Bank.getInstance();
+            semaphore = new Semaphore(10);
+            ExecutorService executorService = Executors.newFixedThreadPool(100);
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-
         for (int i = 0; i <100 ; i++) {
-            //Вызываем 100 транзакций со случайной суммой перевода
-            bank.transfer(getRandomKey(keys),getRandomKey(keys), getRandomCash());
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            executorService.submit(new TransferThread("account" + getRandomInt(),
+                    "account" + getRandomInt(), getRandomCash()));
         }
-
-
-    }
-    //Метод получания случайного аккаунта
-    public static String getRandomKey ( List list) {
-        Random random = new Random();
-        return (String) list.get(random.nextInt(list.size()));
+        semaphore.release();
+            shutdownAndAwaitTermination(executorService);
     }
 
     //Метод получения случайного числа типа Long от 0 до 150_000
@@ -42,5 +30,30 @@ public class Main {
         long range = 150_000L;
         Random r = new Random();
         return (long)(r.nextDouble()*range);
+    }
+
+    public static int getRandomInt() {
+        int max = 1000;
+        return (int)(Math.random()*++max);
+    }
+
+    private static void shutdownAndAwaitTermination(ExecutorService pool) {
+        //отключаем новые задачи которые были отправлены
+        pool.shutdown();
+        try {
+            //ждем завершения существующих задач
+            if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
+                //отменяем текущие задачи
+                pool.shutdownNow();
+                //ждем реакцию на отмену
+                if (!pool.awaitTermination(60, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // повторяем
+            pool.shutdownNow();
+            // сохраянем статус
+            Thread.currentThread().interrupt();
+        }
     }
 }
